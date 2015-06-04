@@ -17,6 +17,76 @@
     </div>
 
     <div class="control-group form-options">
+        <div class="form-options-lexer" id="lexer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+<script type="text/jsx">
+var LEXERS = {"objc": "Obj-C", "scheme": "Scheme", "apacheconf": "ApacheConf", "smarty": "Smarty", "ocaml": "OCaml", "tex": "TeX", "modula2": "Modula", "as": "ActionScript", "haskell": "Haskell", "cobol": "COBOL", "ini": "INI", "mysql": "MySQL", "go": "Go", "diff": "Diff", "haml": "Haml", "perl": "Perl", "smalltalk": "Smalltalk", "make": "Makefile", "mako": "Mako", "php": "PHP", "java": "Java", "monkey": "Monkey", "lua": "Lua", "delphi": "Delphi", "mason": "Mason", "fortran": "Fortran", "json": "JSON", "html": "HTML", "yaml": "YAML", "matlab": "Matlab", "rb": "Ruby", "text": "Text", "erlang": "Erlang", "numpy": "NumPy", "css": "CSS", "scss": "SCSS", "http": "HTTP", "tcsh": "Tcsh", "xslt": "XSLT", "python": "Python", "dart": "Dart", "vim": "VimL", "xml": "XML", "tcl": "Tcl", "sql": "SQL", "rst": "reStructuredText", "js": "JavaScript", "properties": "Properties", "bash": "Bash", "groovy": "Groovy", "c": "C", "irc": "IRC", "bbcode": "BBCode", "sass": "Sass", "postscript": "PostScript", "powershell": "PowerShell", "scala": "Scala", "abap": "ABAP", "django": "Django", "xquery": "XQuery", "cuda": "CUDA", "vb.net": "VB.net", "puppet": "Puppet", "scilab": "Scilab", "clojure": "Clojure", "applescript": "AppleScript", "rust": "Rust", "prolog": "Prolog"};
+var INITIAL_LEXER = '{{ snippet.lexer|default:"" }}';
+
+{% verbatim %}
+var LexerItem = React.createClass({
+    click: function() {
+        this.props.onListClick(this.props.name)
+    },
+
+    render: function() {
+        console.log('selected', this.props.selected);
+        var color = this.props.selected ? 'blue' : 'red';
+        return (
+            <li style={{color: color}} onClick={this.click}>
+                {this.props.display_name}
+            </li>
+        );
+    }
+});
+
+var LexerList = React.createClass({
+
+    handleListClick: function(name) {
+        this.props.onWidgetClick(name);
+    },
+
+    render: function() {
+        that = this;
+        var rows = $.map(this.props.lexers, function(name, key){
+            console.log('list', that.props.selected);
+            var selected = that.props.selected == key ? true : false;
+
+            return <LexerItem display_name={name} name={key} selected={selected} onListClick={that.handleListClick}/>
+        });
+
+        return <ul>{rows}</ul>
+    }
+});
+
+var FilterableLexerWidget = React.createClass({
+    getInitialState: function() {
+        return {
+            selectedLexer: INITIAL_LEXER
+        };
+    },
+
+    handleWidgetClick: function(name) {
+        this.setState({selectedLexer: name})
+    },
+
+    render: function() {
+        return (
+            <div>
+                <input id="id_lexer" name="lexer" value={this.state.selectedLexer}/>
+                <LexerList lexers={LEXERS} selected={this.state.selectedLexer} onWidgetClick={this.handleWidgetClick}/>
+            </div>
+        );
+    }
+});
+
+React.render(<FilterableLexerWidget/>, document.getElementById('lexer'));
+{% endverbatim %}
+</script>
+
+{% comment %}
         <div class="form-options-lexer
             {% if snippet_form.lexer.errors %}control-group error{% endif %}">
             <div class="input-append">
@@ -26,6 +96,7 @@
             <span class="help-inline">{{ error }}</span>
             {% endfor %}
         </div>
+{% endcomment %}
         <div class="form-options-expire">
             {{ snippet_form.expires.errors }}
             <div class="input-prepend">
